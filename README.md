@@ -1,38 +1,44 @@
-# 🎬 AI Short Video Generator
+# AI Short Video Generator
 
-An **AI-powered short video generation platform** that converts **text prompts into high-quality videos** using an automated, serverless rendering pipeline.
-Built to eliminate manual editing and speed up content creation for social media, marketing, and storytelling.
+> Type a prompt → get a rendered 1080p short video, automatically.
 
----
-
-## ✨ What This Project Does
-
-> Enter a text prompt → get a **1080p short video** generated automatically.
-
-This system handles:
-
-* Script generation
-* Scene composition
-* Video rendering
-* Background processing
-  —all without manual video editing.
+A serverless video generation platform that turns text descriptions into fully composed short-form videos — no timeline editor, no manual cuts. Built with **Next.js**, **Remotion**, **Convex**, and **Inngest**.
 
 ---
 
-## 🧠 Core Idea
+## What It Does
 
-Creating short videos is time-consuming and repetitive.
-This project automates the entire workflow by combining **AI-generated content** with **programmatic video rendering**, making video creation:
-
-* Faster
-* Scalable
-* Repeatable
-
-Think of it as **AI-assisted video editing without the editor**.
+Video creation is slow and repetitive by default: write a script, assemble scenes, export, repeat. This project automates the entire pipeline — from prompt to rendered 1080p output — using AI-generated scene structure and programmatic frame rendering. The async job architecture means renders never block the UI and can scale to handle large or concurrent requests.
 
 ---
 
-## 🏗️ Tech Stack
+## How It Works
+
+```
+User Prompt
+   ↓
+AI Script + Scene Generation
+   ↓
+Scene Configuration (JSON)
+   ↓
+Background Job Trigger (Inngest)
+   ↓
+Remotion Frame-by-Frame Rendering
+   ↓
+1080p Video Output
+```
+
+1. You submit a **text prompt**
+2. AI converts it into a **script and scene structure**
+3. Scene data is stored and an **async background job is triggered via Inngest**
+4. **Remotion** renders the video frame-by-frame using React components
+5. The finished **1080p video** is stored and made available for preview or download
+
+The async flow keeps the frontend responsive during long renders and makes the pipeline easy to scale.
+
+---
+
+## Tech Stack
 
 | Layer           | Technology                     |
 | --------------- | ------------------------------ |
@@ -42,78 +48,40 @@ Think of it as **AI-assisted video editing without the editor**.
 | Background Jobs | Inngest                        |
 | Database        | Firebase                       |
 | Styling         | Tailwind CSS                   |
-| AI Integration  | API-based (text → video logic) |
+| AI Integration  | API-based (text → scene logic) |
 
 ---
 
-## 🧩 Architecture Overview
+## Project Structure
 
-```text
-User Prompt
-   ↓
-AI Script / Scene Generation
-   ↓
-Scene Configuration (JSON)
-   ↓
-Background Job Trigger (Inngest)
-   ↓
-Remotion Video Rendering
-   ↓
-1080p Video Output
+```
+app/          → Next.js routes and pages
+components/   → UI and video components
+remotion/     → Video compositions and scenes
+convex/       → Backend queries and mutations
+inngest/      → Background job workflows
+lib/          → Utility and AI-related logic
+styles/       → Tailwind and global styles
 ```
 
-* **Remotion** handles frame-accurate video rendering using React
-* **Inngest** manages long-running background jobs
-* **Convex** stores state, jobs, and metadata
-* **Firebase** handles authentication and persistence
-
 ---
 
-## 📁 Project Structure
+## Getting Started
 
-```text
-app/              → Next.js routes and pages
-components/       → UI and video components
-remotion/         → Video composition & scenes
-convex/           → Backend queries & mutations
-inngest/          → Background job workflows
-lib/              → Utility and AI-related logic
-styles/           → Tailwind & global styles
-```
-
-Designed for **scalability and maintainability**, not just demos.
-
----
-
-## ⚙️ How Video Generation Works
-
-1. User submits a **text prompt**
-2. AI converts prompt into a **script + scene structure**
-3. Scene data is stored and a **background job is triggered**
-4. Remotion renders the video frame-by-frame
-5. Final **1080p video** is generated and stored
-6. User can preview or download the result
-
-This async flow avoids blocking the UI and supports large renders.
-
----
-
-## 🚀 Getting Started
-
-### 1️⃣ Clone the repository
+### 1. Clone the repo
 
 ```bash
 git clone <your-repo-url>
 cd short-video-generator
 ```
 
-### 2️⃣ Install dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Configure environment variables
+### 3. Configure environment variables
 
 Create a `.env.local` file:
 
@@ -123,46 +91,46 @@ CONVEX_DEPLOYMENT=your_convex_url
 FIREBASE_CONFIG=your_firebase_config
 ```
 
-### 4️⃣ Run the app
+### 4. Run the app
 
 ```bash
 npm run dev
 ```
 
-Open 👉 `http://localhost:3000`
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📈 Key Results & Impact
+## What I Learned
 
-* 🎥 Generates **1080p videos automatically**
-* ⚡ Reduced **manual video editing effort by ~80%**
-* 🧠 Fully automated, event-driven workflow
-* 🧩 Modular scene & composition system
-
----
-
-## 📌 Use Cases
-
-* Social media content generation
-* Marketing & promotional videos
-* Educational short-form videos
-* Rapid video prototyping
+- **Remotion's rendering model** — Remotion treats video as a React component tree where time is a prop; building scene compositions this way made it straightforward to map AI-generated JSON directly to visual output without a traditional editing timeline
+- **Async job architecture with Inngest** — offloading long-running renders to Inngest background functions kept the UI non-blocking and gave built-in retry logic, which matters for a process that can fail mid-render
+- **AI output as structured data** — designing prompts that return a consistent scene schema (duration, text, media cues) rather than freeform descriptions was the key to making the generation → rendering handoff reliable
+- **Convex for job state** — using Convex reactive queries to track render job status meant the frontend could update in real time without polling
 
 ---
 
-## 🛠️ Limitations
+## Use Cases
 
-* Currently focused on short-form videos
-* Limited animation presets
-* No voice synthesis pipeline (yet)
+- Short-form social media content
+- Marketing and promotional clips
+- Educational explainer videos
+- Rapid video prototyping
 
 ---
 
-## 🔮 Future Enhancements
+## Roadmap
 
-* Text-to-speech voiceovers
-* Multi-language video generation
-* Custom animation timelines
-* Subtitle & caption support
-* One-click social media export
+- [ ] Text-to-speech voiceover integration
+- [ ] Multi-language video generation
+- [ ] Custom animation timelines
+- [ ] Subtitle and caption support
+- [ ] One-click export to social platforms
+
+---
+
+## Known Limitations
+
+- Currently optimized for short-form video only
+- Limited built-in animation presets
+- No voice synthesis pipeline yet
